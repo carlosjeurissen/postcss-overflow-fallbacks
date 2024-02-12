@@ -1,0 +1,47 @@
+{
+  "name": "postcss-overflow-fallbacks",
+  "version": "0.4.0",
+  "description": "Postcss plugin which provides fallbacks for `overflow: clip` and `overflow: overlay`",
+  "keywords": [
+    "postcss",
+    "css",
+    "postcss-plugin",
+    "overflow"
+  ],
+  "scripts": {
+    "lint-fix": "eslint *.js --fix",
+    "test": "vitest run",
+    "watch": "vitest watch"
+  },
+  "author": "Carlos Jeurissen",
+  "license": "MIT",
+  "repository": "carlosjeurissen/postcss-overflow-fallbacks",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "peerDependencies": {
+    "postcss": "^8.2.8"
+  },
+  "devDependencies": {
+    "clean-publish": "^4.2.0",
+    "eslint": "^8.56.0",
+    "eslint-config-ccb": "^0.16.4",
+    "lint-staged": "^15.2.2",
+    "postcss": "^8.4.35",
+    "simple-git-hooks": "^2.9.0",
+    "vitest": "^1.2.2"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
+  },
+  "lint-staged": {
+    "*.js": "eslint --fix"
+  },
+  "eslintConfig": {
+    "extends": "ccb",
+    "env": {
+      "es2022": true,
+      "node": true
+    }
+  }
+}
