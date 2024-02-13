@@ -55,9 +55,10 @@ test('does not actively add overflow: clip when overflow: hidden is used', async
 test('deals with double-value syntax', async () => {
   await run('a{ overflow: hidden clip; }', 'a{ overflow: hidden hidden; overflow: hidden clip; }');
   await run('a{ overflow: clip clip; }', 'a{ overflow: hidden hidden; overflow: clip clip; }');
+  await run('a{ overflow: clip overlay; }', 'a{ overflow: hidden auto; overflow: clip overlay; }');
 });
 
-test('add fallback only to the first declaration when multiple declarations are following each other.', async () => {
+test('add fallback only to the first declaration when multiple declarations are following each other', async () => {
   await run('a{ overflow: overlay; overflow: clip; }', 'a{ overflow: auto; overflow: overlay; overflow: clip; }');
 });
 
@@ -99,16 +100,22 @@ test('adds a fallback for `overlay` when specifically requested', async () => {
   await run('a{ overflow: overlay; }', 'a{ overflow: auto; overflow: overlay; }', { addOverlayFallback: true });
 });
 
-test('do not add a fallback for overflow: clip when requested not to.', async () => {
+test('do not add a fallback for overflow: clip when requested not to', async () => {
   await run('a{ overflow: clip; }', 'a{ overflow: clip; }', { addClipFallback: false });
 });
 
-test('do not add a fallback for overflow: overlay when requested not to.', async () => {
+test('do not add a fallback for overflow: overlay when requested not to', async () => {
   await run('a{ overflow: overlay; }', 'a{ overflow: overlay; }', { addOverlayFallback: false });
 });
 
-test('do not add a fallback for overflow: overlay or overflow: clip when requested not to.', async () => {
+test('do not add a fallback for overflow: overlay or overflow: clip when requested not to', async () => {
   await run('a{ overflow: overlay; overflow-x: clip; }', 'a{ overflow: overlay; overflow-x: clip; }', { addOverlayFallback: false, addClipFallback: false });
+});
+
+test('does not add a fallback on double value syntax when requested not to', async () => {
+  await run('a{ overflow: clip overlay; }', 'a{ overflow: clip auto; overflow: clip overlay; }', { addClipFallback: false });
+  await run('a{ overflow: clip overlay; }', 'a{ overflow: hidden overlay; overflow: clip overlay; }', { addOverlayFallback: false });
+  await run('a{ overflow: clip overlay; }', 'a{ overflow: clip overlay; }', { addClipFallback: false, addOverlayFallback: false });
 });
 
 test('throws on removed features', async () => {
