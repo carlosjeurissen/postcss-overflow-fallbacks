@@ -62,6 +62,9 @@ Adds `auto` fallback for `overlay`
 **addClipFallback (default: true)**
 Adds `hidden` fallback for `clip`
 
+**operateOnDoubleValues (default: true)**
+If values like `clip auto` should get fallbacks
+
 ## Removed options
 
 Both `upgradeHiddenToClip` and `add` options have been removed. Please use https://www.npmjs.com/package/postcss-overflow-clip instead.

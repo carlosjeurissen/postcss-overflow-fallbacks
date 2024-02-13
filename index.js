@@ -8,6 +8,7 @@ module.exports = function exports (options = {}) {
   const {
     addOverlayFallback = true,
     addClipFallback = true,
+    operateOnDoubleValues = true,
   } = options;
 
   if ('add' in options || 'upgradeHiddenToClip' in options) {
@@ -34,6 +35,8 @@ module.exports = function exports (options = {}) {
       decl.cloneBefore({ value: 'hidden' });
       return;
     }
+
+    if (!operateOnDoubleValues) return;
 
     if (prop !== 'overflow') return;
 
