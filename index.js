@@ -11,7 +11,7 @@ module.exports = function exports (options = {}) {
   } = options;
 
   if ('add' in options || 'upgradeHiddenToClip' in options) {
-    console.warn('[overflow] To actively add clip when hidden is encountered, please use `postcss-overflow-clip`');
+    throw new Error('the `add` and `upgradeHiddenToClip` options are removed. Use the `postcss-overflow-clip` plugin instead.');
   }
 
   function singleKeywordReplacement (node) {
