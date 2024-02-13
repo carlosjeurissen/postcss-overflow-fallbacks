@@ -50,7 +50,7 @@ test('does not add a fallback for overflow: clip if a another overflow fallback 
 });
 
 test('does not add a fallback for overflow: clip if a another overflow fallback is present 3', async () => {
-  await run('a{ overflow: clip; overflow: something; overflow: hidden; }', 'a{ overflow: hidden; overflow: clip; overflow: something; overflow: hidden; overflow: clip; }', { upgradeHiddenToClip: true });
+  await run('a{ overflow: clip; overflow: something; overflow: hidden; }', 'a{ overflow: hidden; overflow: clip; overflow: something; overflow: hidden; }', { upgradeHiddenToClip: true });
 });
 
 test('does not have other overflow side effects', async () => {
@@ -66,7 +66,7 @@ test('does not adds overflow: clip when overflow: hidden is used if specifically
 });
 
 test('adds overflow: clip when overflow: hidden is used if specifically requested', async () => {
-  await run('a{ overflow: hidden; }', 'a{ overflow: hidden; overflow: clip; }', { upgradeHiddenToClip: true });
+  await run('a{ overflow: hidden; }', 'a{ overflow: hidden; }', { upgradeHiddenToClip: true });
 });
 
 test('adds a fallback for overflow: clip on double values', async () => {
@@ -122,9 +122,9 @@ test('Multiple overflow declarations and properly handles important statements',
 });
 
 test('Add clip adds overflow: clip when overflow: hidden is used if specifically requested on double values 1', async () => {
-  await run('a{ overflow: hidden visible; }', 'a{ overflow: hidden visible; overflow: clip visible; }', { upgradeHiddenToClip: true });
+  await run('a{ overflow: hidden visible; }', 'a{ overflow: hidden visible; }', { upgradeHiddenToClip: true });
 });
 
 test('Add clip adds overflow: clip when overflow: hidden is used if specifically requested on double values 2', async () => {
-  await run('a{ overflow: clip !important; overflow: clip; overflow: hidden; overflow: overlay; overflow: clip; overflow: overlay !important; overflow: hidden; }', 'a{ overflow: hidden !important; overflow: clip !important; overflow: clip; overflow: hidden; overflow: overlay; overflow: clip; overflow: overlay !important; overflow: hidden; overflow: clip; }', { upgradeHiddenToClip: true });
+  await run('a{ overflow: clip !important; overflow: clip; overflow: hidden; overflow: overlay; overflow: clip; overflow: overlay !important; overflow: hidden; }', 'a{ overflow: hidden !important; overflow: clip !important; overflow: clip; overflow: hidden; overflow: overlay; overflow: clip; overflow: overlay !important; overflow: hidden; }', { upgradeHiddenToClip: true });
 });

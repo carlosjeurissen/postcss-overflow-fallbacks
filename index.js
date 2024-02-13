@@ -6,41 +6,15 @@ module.exports = function exports (options = {}) {
   const {
     addOverlayFallback = true,
     addClipFallback = true,
-    upgradeHiddenToClip = false,
   } = options;
+
+  if ('add' in options || 'upgradeHiddenToClip' in options) {
+    console.warn('[overflow] To actively add clip when hidden is encountered, please use `postcss-overflow-clip`');
+  }
 
   const twoValueSyntaxRegex = /^[A-Za-z]{2,20} [A-Za-z]{2,20}$/;
 
-  function usesTwoValueSyntax ({ prop, value }) {
-    return prop === 'overflow' && twoValueSyntaxRegex.test(value);
-  }
-
-  function handleUpgrades (decl) {
-    if (!upgradeHiddenToClip) return;
-
-    const { prop, value } = decl;
-
-    // do not add upgrades if another upgrade is present
-    const nextDecl = decl.next();
-    if (nextDecl && nextDecl.prop === prop) return;
-
-    if (value === 'hidden') {
-      decl.cloneAfter({ value: 'clip' });
-      return;
-    }
-
-    const handleTwoValueSyntax = usesTwoValueSyntax(decl) && value.includes('hidden');
-    if (!handleTwoValueSyntax) return;
-
-    const upgradeValue = value.split(' ').map((keyword) => {
-      if (keyword === 'hidden') return 'clip';
-      return keyword;
-    }).join(' ');
-
-    decl.cloneAfter({ value: upgradeValue });
-  }
-
-  function handleFallbacks (decl) {
+  function handleDeclaration (decl) {
     if (!addOverlayFallback && !addClipFallback) return;
 
     const { prop, value } = decl;
@@ -61,8 +35,10 @@ module.exports = function exports (options = {}) {
       return;
     }
 
-    const handleTwoValueSyntax = usesTwoValueSyntax(decl);
-    if (!handleTwoValueSyntax) return;
+    if (prop !== 'overflow') return;
+
+    const usesTwoValueSyntax = twoValueSyntaxRegex.test(value);
+    if (!usesTwoValueSyntax) return;
 
     const fallbackValue = value.split(' ').map((keyword) => {
       if (addOverlayFallback && keyword === 'overlay') return 'auto';
@@ -73,11 +49,6 @@ module.exports = function exports (options = {}) {
     if (fallbackValue === value) return;
 
     decl.cloneBefore({ value: fallbackValue });
-  }
-
-  function handleDeclaration (decl) {
-    handleUpgrades(decl);
-    handleFallbacks(decl);
   }
 
   const Declaration = {
