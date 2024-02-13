@@ -43,5 +43,8 @@
       "es2022": true,
       "node": true
     }
+  },
+  "dependencies": {
+    "postcss-value-parser": "^4.2.0"
   }
 }

@@ -2,6 +2,8 @@
 
 'use strict';
 
+const valueParser = require('postcss-value-parser');
+
 module.exports = function exports (options = {}) {
   const {
     addOverlayFallback = true,
@@ -12,7 +14,21 @@ module.exports = function exports (options = {}) {
     console.warn('[overflow] To actively add clip when hidden is encountered, please use `postcss-overflow-clip`');
   }
 
-  const twoValueSyntaxRegex = /^[A-Za-z]{2,20} [A-Za-z]{2,20}$/;
+  function singleKeywordReplacement (node) {
+    if (node.type !== 'word') return;
+
+    const value = node.value;
+    if (value === 'overlay') {
+      if (!addOverlayFallback) return;
+      node.value = 'auto';
+      return;
+    }
+
+    if (!addClipFallback) return;
+    if (value !== 'clip') return;
+
+    node.value = 'hidden';
+  }
 
   function handleDeclaration (decl) {
     if (!addOverlayFallback && !addClipFallback) return;
@@ -37,16 +53,14 @@ module.exports = function exports (options = {}) {
 
     if (prop !== 'overflow') return;
 
-    const usesTwoValueSyntax = twoValueSyntaxRegex.test(value);
-    if (!usesTwoValueSyntax) return;
+    const parsedValues = valueParser(value);
 
-    const fallbackValue = value.split(' ').map((keyword) => {
-      if (addOverlayFallback && keyword === 'overlay') return 'auto';
-      if (addClipFallback && keyword === 'clip') return 'hidden';
-      return keyword;
-    }).join(' ');
+    if (parsedValues.nodes.length < 3) return;
 
-    if (fallbackValue === value) return;
+    parsedValues.walk(singleKeywordReplacement);
+
+    const fallbackValue = parsedValues.toString();
+    if (value === fallbackValue) return;
 
     decl.cloneBefore({ value: fallbackValue });
   }
