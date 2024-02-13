@@ -118,13 +118,19 @@ test('does not add a fallback on double-value syntax when requested not to', asy
   await run('a{ overflow: clip overlay; }', 'a{ overflow: clip overlay; }', { addClipFallback: false, addOverlayFallback: false });
 });
 
-test('add staged fallbacks for double-value syntax if needed.', async () => {
+test('add staged fallbacks for double-value syntax if needed', async () => {
   await run('a{ overflow: clip overlay; }', 'a{ overflow: hidden auto; overflow: hidden overlay; overflow: clip overlay; }');
 });
 
+test('do not add staged fallbacks for double-value syntax if not needed', async () => {
+  await run('a{ overflow: clip auto; }', 'a{ overflow: hidden auto; overflow: clip auto; }');
+  await run('a{ overflow: clip hidden; }', 'a{ overflow: hidden hidden; overflow: clip hidden; }');
+});
+
 test('throws on removed features', async () => {
-  await runError('a{ overflow: overlay; }', 'the `add` and `upgradeHiddenToClip` options are removed. Use the `postcss-overflow-clip` plugin instead.', { upgradeHiddenToClip: false });
-  await runError('a{ overflow: overlay; }', 'the `add` and `upgradeHiddenToClip` options are removed. Use the `postcss-overflow-clip` plugin instead.', { upgradeHiddenToClip: true });
-  await runError('a{ overflow: overlay; }', 'the `add` and `upgradeHiddenToClip` options are removed. Use the `postcss-overflow-clip` plugin instead.', { add: false });
-  await runError('a{ overflow: overlay; }', 'the `add` and `upgradeHiddenToClip` options are removed. Use the `postcss-overflow-clip` plugin instead.', { add: true });
+  const errorMessage = 'the `add` and `upgradeHiddenToClip` options are removed. Use the `postcss-overflow-clip` plugin instead';
+  await runError('a{ overflow: overlay; }', errorMessage, { upgradeHiddenToClip: false });
+  await runError('a{ overflow: overlay; }', errorMessage, { upgradeHiddenToClip: true });
+  await runError('a{ overflow: overlay; }', errorMessage, { add: false });
+  await runError('a{ overflow: overlay; }', errorMessage, { add: true });
 });
