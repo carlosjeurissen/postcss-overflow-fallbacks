@@ -2,45 +2,19 @@
 
 'use strict';
 
+const valueParser = require('postcss-value-parser');
+
 module.exports = function exports (options = {}) {
   const {
     addOverlayFallback = true,
     addClipFallback = true,
-    upgradeHiddenToClip = false,
   } = options;
 
-  const twoValueSyntaxRegex = /^[A-Za-z]{2,20} [A-Za-z]{2,20}$/;
-
-  function usesTwoValueSyntax ({ prop, value }) {
-    return prop === 'overflow' && twoValueSyntaxRegex.test(value);
+  if ('add' in options || 'upgradeHiddenToClip' in options) {
+    throw new Error('the `add` and `upgradeHiddenToClip` options are removed. Use the `postcss-overflow-clip` plugin instead.');
   }
 
-  function handleUpgrades (decl) {
-    if (!upgradeHiddenToClip) return;
-
-    const { prop, value } = decl;
-
-    // do not add upgrades if another upgrade is present
-    const nextDecl = decl.next();
-    if (nextDecl && nextDecl.prop === prop) return;
-
-    if (value === 'hidden') {
-      decl.cloneAfter({ value: 'clip' });
-      return;
-    }
-
-    const handleTwoValueSyntax = usesTwoValueSyntax(decl) && value.includes('hidden');
-    if (!handleTwoValueSyntax) return;
-
-    const upgradeValue = value.split(' ').map((keyword) => {
-      if (keyword === 'hidden') return 'clip';
-      return keyword;
-    }).join(' ');
-
-    decl.cloneAfter({ value: upgradeValue });
-  }
-
-  function handleFallbacks (decl) {
+  function handleDeclaration (decl) {
     if (!addOverlayFallback && !addClipFallback) return;
 
     const { prop, value } = decl;
@@ -61,23 +35,43 @@ module.exports = function exports (options = {}) {
       return;
     }
 
-    const handleTwoValueSyntax = usesTwoValueSyntax(decl);
-    if (!handleTwoValueSyntax) return;
+    if (prop !== 'overflow') return;
 
-    const fallbackValue = value.split(' ').map((keyword) => {
-      if (addOverlayFallback && keyword === 'overlay') return 'auto';
-      if (addClipFallback && keyword === 'clip') return 'hidden';
-      return keyword;
-    }).join(' ');
+    const parsedValues = valueParser(value);
 
-    if (fallbackValue === value) return;
+    if (parsedValues.nodes.length < 3) return;
 
-    decl.cloneBefore({ value: fallbackValue });
-  }
+    let changed = false;
+    let fallbackDecl;
+    if (addClipFallback) {
+      parsedValues.walk((node) => {
+        if (node.type !== 'word') return;
+        if (node.value !== 'clip') return;
+        node.value = 'hidden';
+        changed = true;
+      });
+      if (changed) {
+        const fallbackValue = parsedValues.toString();
+        fallbackDecl = decl.cloneBefore({ value: fallbackValue });
+      }
+    }
 
-  function handleDeclaration (decl) {
-    handleUpgrades(decl);
-    handleFallbacks(decl);
+    if (!addOverlayFallback) return;
+
+    if (changed) {
+      changed = false;
+    }
+
+    parsedValues.walk((node) => {
+      if (node.type !== 'word') return;
+      if (node.value !== 'overlay') return;
+      node.value = 'auto';
+      changed = true;
+    });
+    if (!changed) return;
+    const fallbackValue = parsedValues.toString();
+    const cloneBeforeDecl = fallbackDecl || decl;
+    cloneBeforeDecl.cloneBefore({ value: fallbackValue });
   }
 
   const Declaration = {

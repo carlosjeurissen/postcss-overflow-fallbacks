@@ -6,31 +6,26 @@
 
 ```css
 .foo {
-    overflow: clip;
+    overflow-x: clip;
 }
 
 .bar {
-    overflow: hidden;
-}
-
-.oth {
-    overflow: overlay;
+    overflow: clip overlay;
+    overflow-block: overlay;
 }
 ```
 
 ```css
 .foo {
-    overflow: hidden;
-    overflow: clip;
+    overflow-x: hidden;
+    overflow-x: clip;
 }
 
 .bar {
-    overflow: hidden;
-}
-
-.oth {
-    overflow: auto;
-    overflow: overlay;
+    overflow: hidden auto;
+    overflow: clip overlay;
+    overflow-block: auto;
+    overflow-block: overlay;
 }
 ```
 
@@ -39,7 +34,7 @@
 **Step 1:** Install plugin:
 
 ```sh
-npm install --save-dev postcss postcss-overflow-clip
+npm install --save-dev postcss postcss-overflow-fallbacks
 ```
 
 **Step 2:** Check you project for existed PostCSS config: `postcss.config.js`
@@ -67,7 +62,6 @@ Adds `auto` fallback for `overlay`
 **addClipFallback (default: true)**
 Adds `hidden` fallback for `clip`
 
-**upgradeHiddenToClip (default: false)**
-Adds `clip` upgrade to `hidden`
+## Removed options
 
-[official docs]: https://github.com/postcss/postcss#usage
+Both `upgradeHiddenToClip` and `add` options have been removed. Please use https://www.npmjs.com/package/postcss-overflow-clip instead.
