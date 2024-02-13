@@ -1,6 +1,6 @@
 {
   "name": "postcss-overflow-fallbacks",
-  "version": "0.5.0",
+  "version": "1.0.0",
   "description": "Postcss plugin which provides fallbacks for `overflow: clip` and `overflow: overlay`",
   "keywords": [
     "postcss",
