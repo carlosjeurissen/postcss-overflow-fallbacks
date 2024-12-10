@@ -1,4 +1,4 @@
-/* eslint-disable no-autofix/strict */
+/* eslint-disable disable-autofix/strict */
 
 'use strict';
 
