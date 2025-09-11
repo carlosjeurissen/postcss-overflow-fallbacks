@@ -1,6 +1,6 @@
 {
   "name": "postcss-overflow-fallbacks",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Postcss plugin which provides fallbacks for `overflow: clip` and `overflow: overlay`",
   "keywords": [
     "postcss",
@@ -26,9 +26,9 @@
     "postcss": ">=8.0.0"
   },
   "devDependencies": {
-    "eslint": "^9.29.0",
-    "eslint-config-ccb": "^0.36.0",
-    "postcss": "^8.5.5",
-    "vitest": "^3.2.3"
+    "eslint": "^9.35.0",
+    "eslint-config-ccb": "^0.36.1",
+    "postcss": "^8.5.6",
+    "vitest": "^3.2.4"
   }
 }
